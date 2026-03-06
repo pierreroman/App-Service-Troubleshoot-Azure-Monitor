@@ -2,8 +2,7 @@
 name: image-converter
 metadata:
   template: image-converter@0.0.1
-services:
-  web:
-    project: .
-    host: appservice
-    language: php
+hooks:
+  postprovision:
+    shell: pwsh
+    run: ./scripts/deploy-app.ps1

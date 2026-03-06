@@ -65,7 +65,11 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
       appSettings: [
         {
           name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
-          value: 'true'
+          value: 'false'
+        }
+        {
+          name: 'APACHE_DIRECTORY_INDEX'
+          value: 'index.php index.html'
         }
       ]
     }
