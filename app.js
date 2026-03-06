@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function () {
         body.append('images', imgNames.length);
         body.append('imgNames', imgNames.join(','));
 
-        fetch('process.php', { method: 'POST', body: body })
+        fetch('process.php', { method: 'POST', body: body, credentials: 'same-origin' })
             .then(function (response) {
                 if (!response.ok) throw new Error('HTTP ' + response.status);
                 return response.text();
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var body = new URLSearchParams();
         body.append('csrf_token', csrfToken);
 
-        fetch('delete.php', { method: 'POST', body: body })
+        fetch('delete.php', { method: 'POST', body: body, credentials: 'same-origin' })
             .then(function (response) {
                 if (!response.ok) throw new Error('HTTP ' + response.status);
                 return response.text();

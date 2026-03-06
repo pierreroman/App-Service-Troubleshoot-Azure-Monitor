@@ -1,14 +1,14 @@
 <?php
-session_start();
-
 // Only accept POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     exit('Method Not Allowed');
 }
 
-// Validate CSRF token
-if (!hash_equals($_SESSION['csrf_token'] ?? '', $_POST['csrf_token'] ?? '')) {
+// Double Submit Cookie CSRF: compare cookie value with POST value
+$cookieToken = $_COOKIE['csrf_token'] ?? '';
+$postToken   = $_POST['csrf_token'] ?? '';
+if ($cookieToken === '' || !hash_equals($cookieToken, $postToken)) {
     http_response_code(403);
     exit('Invalid CSRF token');
 }
@@ -18,6 +18,13 @@ $maxImages = filter_input(INPUT_POST, 'images', FILTER_VALIDATE_INT);
 if ($maxImages === false || $maxImages < 1 || $maxImages > 100) {
     http_response_code(400);
     exit('Invalid image count');
+}
+
+// Intentional 403 for the troubleshooting tutorial:
+// Selecting more than 3 images triggers an error for Azure Monitor diagnostics.
+if ($maxImages > 3) {
+    http_response_code(403);
+    exit('Too many images selected — limit is 3 per batch.');
 }
 
 // Parse and whitelist image names (must match imgNN.jpg pattern)

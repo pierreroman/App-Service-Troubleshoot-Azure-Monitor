@@ -46,6 +46,35 @@ resource appServicePlan 'Microsoft.Web/serverfarms@2023-12-01' = {
 }
 
 // ---------------------------------------------------------------------------
+// Log Analytics Workspace
+// ---------------------------------------------------------------------------
+resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' = {
+  name: '${abbrs.operationalInsightsWorkspaces}${resourceToken}'
+  location: location
+  tags: tags
+  properties: {
+    sku: {
+      name: 'PerGB2018'
+    }
+    retentionInDays: 30
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Application Insights
+// ---------------------------------------------------------------------------
+resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: '${abbrs.insightsComponents}${resourceToken}'
+  location: location
+  tags: tags
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    WorkspaceResourceId: logAnalytics.id
+  }
+}
+
+// ---------------------------------------------------------------------------
 // App Service (PHP on Linux)
 // ---------------------------------------------------------------------------
 resource webApp 'Microsoft.Web/sites@2023-12-01' = {
@@ -71,6 +100,14 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
           name: 'APACHE_DIRECTORY_INDEX'
           value: 'index.php index.html'
         }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: appInsights.properties.ConnectionString
+        }
+        {
+          name: 'ApplicationInsightsAgent_EXTENSION_VERSION'
+          value: '~3'
+        }
       ]
     }
   }
@@ -82,3 +119,6 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
 output AZURE_LOCATION string = location
 output WEB_URI string = 'https://${webApp.properties.defaultHostName}'
 output WEB_APP_NAME string = webApp.name
+output APPINSIGHTS_NAME string = appInsights.name
+output APPINSIGHTS_CONNECTION_STRING string = appInsights.properties.ConnectionString
+output LOG_ANALYTICS_WORKSPACE_NAME string = logAnalytics.name

@@ -1,7 +1,16 @@
 <?php
-session_start();
-if (empty($_SESSION['csrf_token'])) {
-    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+// Double Submit Cookie CSRF: generate token and set as cookie.
+// No session needed — works on Azure Linux PHP-FPM.
+if (empty($_COOKIE['csrf_token'])) {
+    $token = bin2hex(random_bytes(32));
+    setcookie('csrf_token', $token, [
+        'path'     => '/',
+        'httponly' => false,   // JS must read it
+        'samesite' => 'Strict',
+        'secure'   => isset($_SERVER['HTTPS']),
+    ]);
+} else {
+    $token = $_COOKIE['csrf_token'];
 }
 ?>
 <!doctype html>
@@ -11,7 +20,7 @@ if (empty($_SESSION['csrf_token'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Sample troubleshooting app to use with Azure App Service.">
     <meta name="author" content="Mangesh Sangapu">
-    <meta name="csrf-token" content="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
+    <meta name="csrf-token" content="<?= htmlspecialchars($token, ENT_QUOTES, 'UTF-8') ?>">
 
     <title>Image Converter</title>
 

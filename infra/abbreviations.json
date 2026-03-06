@@ -1,4 +1,6 @@
 {
   "webSitesAppService": "app-",
-  "webServerFarms": "plan-"
+  "webServerFarms": "plan-",
+  "operationalInsightsWorkspaces": "log-",
+  "insightsComponents": "appi-"
 }

@@ -1,14 +1,14 @@
 <?php
-session_start();
-
 // Only accept POST requests
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     exit('Method Not Allowed');
 }
 
-// Validate CSRF token
-if (!hash_equals($_SESSION['csrf_token'] ?? '', $_POST['csrf_token'] ?? '')) {
+// Double Submit Cookie CSRF: compare cookie value with POST value
+$cookieToken = $_COOKIE['csrf_token'] ?? '';
+$postToken   = $_POST['csrf_token'] ?? '';
+if ($cookieToken === '' || !hash_equals($cookieToken, $postToken)) {
     http_response_code(403);
     exit('Invalid CSRF token');
 }

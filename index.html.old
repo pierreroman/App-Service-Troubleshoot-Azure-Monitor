@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Sample troubleshooting app to use with Azure App Service.">
+    <meta name="author" content="Mangesh Sangapu">
+
+    <title>Image Converter</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <link href="starter-template.css" rel="stylesheet">
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="#">Image Converter</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          </li>
+<!--          <li class="nav-item">
+            <a class="nav-link disabled" href="#">Disabled</a>
+          </li>
+-->          
+          <li class="nav-item dropdown active">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Tools</a>
+            <div class="dropdown-menu" aria-labelledby="dropdown01">
+              <a id="viewImages" class="dropdown-item" data-toggle="modal" data-target="#viewModal" href="#">View Images</a>
+              <a class="dropdown-item" data-toggle="modal" data-target="#convertModal" href="#">Convert to PNG</a>
+            </div>
+          </li>
+
+          <li class="nav-item active">
+            <a class="nav-link" href="#" data-target="#aboutModal" data-toggle="modal">About <span class="sr-only">(current)</span></a>
+          </li>
+          
+        </ul>
+<!--        
+        <form class="form-inline my-2 my-lg-0">
+          <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+-->        
+      </div>
+    </nav>
+
+    <main role="main" class="container">
+
+      <div class="starter-template">
+                <p class="lead">ImageConverter is a sample app for Azure App Service. <br/>This app should be used along with this <a href="https://docs.microsoft.com/azure/app-service/containers/tutorial-troubleshoot-monitor">tutorial</a>. <br/></p>
+      </div>
+
+    </main><!-- /.container -->
+
+
+    <!-- Modal -->
+    <div class="modal fade" id="convertModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Select JPGs to convert to PNG</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          
+          <div class="modal-body">
+            <div class = "row top-buffer">
+               <div class = "col-sm-6 col-md-3">
+                  <a href = "#" class = "thumbnail">
+                     <img height="100" width="100" src = "./thumbs/img01.jpg" alt = "Generic placeholder thumbnail">
+                  </a>
+               </div>
+               
+               <div class = "col-sm-6 col-md-3">
+                  <a href = "#" class = "thumbnail">
+                     <img height="100" width="100" src = "./thumbs/img02.jpg" alt = "Generic placeholder thumbnail">
+                  </a>
+               </div>
+               
+               <div class = "col-sm-6 col-md-3">
+                  <a href = "#" class = "thumbnail">
+                     <img height="100" width="100" src = "./thumbs/img03.jpg" alt = "Generic placeholder thumbnail">
+                  </a>
+               </div>
+               
+               <div class = "col-sm-6 col-md-3">
+                  <a href = "#" class = "thumbnail">
+                     <img height="100" width="100" src = "./thumbs/img04.jpg" alt = "Generic placeholder thumbnail">
+                  </a>
+               </div>
+            </div>
+
+            <div class = "row top-buffer">
+               <div class = "col-sm-6 col-md-3">
+                  <a href = "#" class = "thumbnail">
+                     <img height="100" width="100" src = "./thumbs/img05.jpg" alt = "Generic placeholder thumbnail">
+                  </a>
+               </div>
+               
+               <div class = "col-sm-6 col-md-3">
+                  <a href = "#" class = "thumbnail">
+                     <img height="100" width="100" src = "./thumbs/img06.jpg" alt = "Generic placeholder thumbnail">
+                  </a>
+               </div>
+               
+               <div class = "col-sm-6 col-md-3">
+                  <a href = "#" class = "thumbnail">
+                     <img height="100" width="100" src = "./thumbs/img07.jpg" alt = "Generic placeholder thumbnail">
+                  </a>
+               </div>
+               
+               <div class = "col-sm-6 col-md-3">
+                  <a href = "#" class = "thumbnail">
+                     <img height="100" width="100" src = "./thumbs/img08.jpg" alt = "Generic placeholder thumbnail">
+                  </a>
+               </div>
+            </div>
+            
+            <div class = "row top-buffer">
+               <div class = "col-sm-6 col-md-3">
+                  <a href = "#" class = "thumbnail">
+                     <img height="100" width="100" src = "./thumbs/img09.jpg" alt = "Generic placeholder thumbnail">
+                  </a>
+               </div>
+               
+               <div class = "col-sm-6 col-md-3">
+                  <a href = "#" class = "thumbnail">
+                     <img height="100" width="100" src = "./thumbs/img10.jpg" alt = "Generic placeholder thumbnail">
+                  </a>
+               </div>
+               
+               <div class = "col-sm-6 col-md-3">
+                  <a href = "#" class = "thumbnail">
+                     <img height="100" width="100" src = "./thumbs/img11.jpg" alt = "Generic placeholder thumbnail">
+                  </a>
+               </div>
+               
+               <div class = "col-sm-6 col-md-3">
+                  <a href = "#" class = "thumbnail">
+                     <img height="100" width="100" src = "./thumbs/img12.jpg" alt = "Generic placeholder thumbnail">
+                  </a>
+               </div>
+            </div>            
+
+
+          </div>
+          <div class="modal-footer">
+            <span id="message"></span>
+            <button id="process" type="button" class="btn btn-primary">Convert</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal -->
+    <div id="viewModal" class="modal fade" role="dialog">
+      <div class="modal-dialog modal-dialog-centered">
+    
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="viewModalLabel">Image Listing</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              <table class="table">
+                  <tr>
+                      <td><strong>JPG Images</strong> <br/><span id="jpg"></span></td>
+                      <td><strong>Converted PNG Images</strong> <br/><span id="png"></span></td>
+                  </tr>
+              </table>
+          </div>
+          <div class="modal-footer">
+              <button id="delete" type="button" class="btn btn-danger">Delete Converted Images</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+    
+      </div>
+    </div>    
+
+
+    <!-- Modal -->
+    <div id="aboutModal" class="modal fade" role="dialog">
+      <div class="modal-dialog modal-dialog-centered">
+    
+        <!-- Modal content-->
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="viewModalLabel">About</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+              Sample App Created by <a href="mailto:msangapu@outlook.com">Mangesh Sangapu</a> for use with <a href="http://docs.microsoft.com/azure/app-service/">Azure App Service.</a><br/>
+              This app should be used along with this <a href="#">Troubleshooting Tutorial</a>. 
+              
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+    
+      </div>
+    </div>  
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.0.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+    <script type="text/javascript">
+        $('img').click(function(){
+            if ($(this).hasClass('selected')) $(this).removeClass('selected'); // removes the previous selected class
+            else $(this).addClass('selected'); // adds the class to the clicked image
+            
+            var imgSelected = $('.selected').length;
+            
+            if (imgSelected > 0)
+            {
+                $('#message').html(imgSelected + " images selected");
+            }
+            else
+            {
+                $('#message').html("");
+            }
+        });
+
+        $('#convertModal').on('hidden.bs.modal', function () {
+            $('.selected').removeClass('selected');
+            $('#message').html("");
+        });
+
+        $('#viewModal').on('shown.bs.modal', function () {
+            
+            $.ajax({
+                
+                    url : 'listImages.php?ext=jpg',
+                    type : 'GET',
+                    success : function(data) {              
+                        $("#jpg").html(data);
+                    }              
+            });
+            
+            $.ajax({
+                
+                    url : 'listImages.php?ext=png',
+                    type : 'GET',
+                    success : function(data) {              
+                        $("#png").html(data);
+                    }              
+            });            
+        });     
+        
+        
+        $('#viewModal').on('hidden.bs.modal', function () {
+            $("#jpg").html(""); 
+            $("#png").html("");
+        });
+        
+        
+        $("#process").click(function(){
+    
+            var imgsrc='';
+            var numImages = $(".selected").length;
+            
+            $('#message').html("<div class=\"spinner-border\" role=\"status\"><span class=\"sr-only\">Loading...</span></div>");
+            
+            $(".selected").each(function() {  
+              imgsrc = imgsrc + (this.src).split('\/').pop() + ",";
+            }); 
+            
+            $.ajax({
+            
+                url : 'process.php',
+                type : 'GET',
+                data : {
+                    'images' : numImages,
+                    'imgNames':imgsrc
+                },
+                success : function(data) {              
+                    alert(numImages+' image(s) converted. \nClick Tools->View Images to confirm.');
+                    $('#convertModal').modal('hide');
+                },
+                error : function(request,error)
+                {
+                    alert(request.statusText + "- HTTP "+ request.status);
+                    $('#message').html("");
+                }
+            });
+
+        });
+
+
+        $("#delete").click(function(){
+    
+            $.ajax({
+            
+                url : 'delete.php',
+                type : 'GET',
+                success : function(data) {              
+                    alert('Deleted converted images.');
+                    $('#viewModal').modal('hide');
+                },
+                error : function(request,error)
+                {
+                    alert(request.statusText + "- HTTP "+ request.status);
+                }
+            });
+
+        });
+        
+    </script>
+    
+  </body>
+</html>
