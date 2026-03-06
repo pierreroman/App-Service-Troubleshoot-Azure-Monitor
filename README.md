@@ -22,6 +22,8 @@ This is a sample image converter app for Azure App Service. It converts JPG imag
 
 Originally built as a companion to the [App Service troubleshooting tutorial](https://docs.microsoft.com/azure/app-service/containers/tutorial-troubleshoot-monitor).
 
+> **Intentional errors for the tutorial:** Converting 1–3 images works normally. Selecting 4 or more images returns an HTTP 403 error, which generates failures visible in Azure Monitor / Application Insights.
+
 ## Architecture
 
 - **Frontend**: Bootstrap 5.3 + vanilla JavaScript (no jQuery)
@@ -35,7 +37,7 @@ Originally built as a companion to the [App Service troubleshooting tutorial](ht
 |-------------------|--------------------------------------------|
 | `index.php`       | Main page (Bootstrap 5, CSRF token generation) |
 | `app.js`          | Extracted frontend JavaScript (vanilla JS, fetch API) |
-| `process.php`     | Converts selected JPGs to PNGs (POST-only, CSRF-protected) |
+| `process.php`     | Converts selected JPGs to PNGs (POST-only, CSRF-protected, 403 on 4+ images) |
 | `delete.php`      | Deletes converted PNG images (POST-only, CSRF-protected) |
 | `listImages.php`  | Lists images by extension with XSS escaping |
 | `getThumbs.php`   | Scans `thumbs/` and returns JSON array (dynamic gallery) |
@@ -120,9 +122,20 @@ az monitor app-insights component show --app <appi-name> -g <rg-name> --query "p
 azd down --force --purge
 ```
 
+## Intentional Error Behavior
+
+This app is designed for the Azure Monitor troubleshooting tutorial:
+
+| Images selected | Result |
+| --- | --- |
+| 1–3 | Converts successfully (HTTP 200) |
+| 4+ | Returns **HTTP 403** — generates errors for App Insights |
+
+Use Tools → Convert to PNG, select 4+ thumbnails, and click Convert to generate 403 errors. Then inspect the failures in Application Insights → Failures blade.
+
 ## Security Features
 
-- **CSRF protection**: Session-based tokens on all state-changing endpoints (POST-only)
+- **CSRF protection**: Double Submit Cookie pattern (works on Azure Linux PHP-FPM where sessions don't persist)
 - **Input validation**: Image names validated against strict regex, extensions whitelisted
 - **XSS prevention**: All output HTML-escaped with `htmlspecialchars()`
 - **Restricted deletion**: Only `converted_*.png` files can be deleted
