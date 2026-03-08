@@ -1,0 +1,18 @@
+body {
+  padding-top: 5rem;
+}
+
+.starter-template {
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.top-buffer { margin-top:20px; }
+
+#thumbGallery img { border: solid 1px #dee2e6; margin: 6px; transition: border-color 0.15s, box-shadow 0.15s; }
+
+#thumbGallery img.selected { border-color: #dc3545; box-shadow: 0 0 12px rgba(220,53,69,.5); }
+
+.modal-dialog.modal-lg {
+  max-width: 75%;
+}

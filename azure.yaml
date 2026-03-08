@@ -2,7 +2,8 @@
 name: image-converter
 metadata:
   template: image-converter@0.0.1
-hooks:
-  postprovision:
-    shell: pwsh
-    run: ./scripts/deploy-app.ps1
+services:
+  web:
+    project: .
+    host: appservice
+    language: js

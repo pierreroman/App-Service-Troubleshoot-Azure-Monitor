@@ -15,8 +15,8 @@ param location string
 @description('App Service SKU (default: B1)')
 param appServiceSku string = 'B1'
 
-@description('PHP runtime version')
-param phpVersion string = '8.4'
+@description('Node.js runtime version')
+param nodeVersion string = '20-lts'
 
 // ---------------------------------------------------------------------------
 // Variables
@@ -87,18 +87,14 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
     serverFarmId: appServicePlan.id
     httpsOnly: true
     siteConfig: {
-      linuxFxVersion: 'PHP|${phpVersion}'
+      linuxFxVersion: 'NODE|${nodeVersion}'
       ftpsState: 'Disabled'
       minTlsVersion: '1.2'
       alwaysOn: appServiceSku != 'F1'
       appSettings: [
         {
           name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
-          value: 'false'
-        }
-        {
-          name: 'APACHE_DIRECTORY_INDEX'
-          value: 'index.php index.html'
+          value: 'true'
         }
         {
           name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
