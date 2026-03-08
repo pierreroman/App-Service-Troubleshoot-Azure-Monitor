@@ -1,7 +1,8 @@
 ---
 page_type: sample
 languages:
-- php
+- javascript
+- nodejs
 products:
 - app-service
 description: "App Service Tutorial to be used with http://docs.microsoft.com/azure/app-service/containers/tutorial-troubleshoot-monitor"
@@ -18,7 +19,7 @@ Guidance on onboarding samples to docs.microsoft.com/samples: https://review.doc
 Taxonomies for products and languages: https://review.docs.microsoft.com/new-hope/information-architecture/metadata/taxonomies?branch=master
 -->
 
-This is a sample image converter app for Azure App Service. It converts JPG images to PNG and includes full Azure Developer CLI (azd) deployment with Application Insights monitoring.
+This is a sample image converter app for Azure App Service. It converts JPG images to PNG using [Sharp](https://sharp.pixelplumbing.com/) and includes full Azure Developer CLI (azd) deployment with Application Insights monitoring.
 
 Originally built as a companion to the [App Service troubleshooting tutorial](https://docs.microsoft.com/azure/app-service/containers/tutorial-troubleshoot-monitor).
 
@@ -27,7 +28,8 @@ Originally built as a companion to the [App Service troubleshooting tutorial](ht
 ## Architecture
 
 - **Frontend**: Bootstrap 5.3 + vanilla JavaScript (no jQuery)
-- **Backend**: PHP 8.4 on Azure App Service (Linux)
+- **Backend**: Node.js 20 LTS / Express on Azure App Service (Linux)
+- **Image processing**: Sharp (JPG → PNG conversion)
 - **Monitoring**: Application Insights + Log Analytics workspace
 - **Deployment**: Azure Developer CLI (azd) with Bicep infrastructure
 
@@ -35,28 +37,41 @@ Originally built as a companion to the [App Service troubleshooting tutorial](ht
 
 | File/folder       | Description                                |
 |-------------------|--------------------------------------------|
-| `index.php`       | Main page (Bootstrap 5, CSRF token generation) |
-| `app.js`          | Extracted frontend JavaScript (vanilla JS, fetch API) |
-| `process.php`     | Converts selected JPGs to PNGs (POST-only, CSRF-protected, 403 on 4+ images) |
-| `delete.php`      | Deletes converted PNG images (POST-only, CSRF-protected) |
-| `listImages.php`  | Lists images by extension with XSS escaping |
-| `getThumbs.php`   | Scans `thumbs/` and returns JSON array (dynamic gallery) |
-| `starter-template.css` | Custom CSS for image selection and modals |
+| `server.js`       | Express server — API routes, CSRF middleware, static file serving |
+| `package.json`    | Node.js project manifest (express, sharp, cookie-parser) |
+| `public/index.html` | Main page (Bootstrap 5, `{{CSRF_TOKEN}}` placeholder injected at runtime) |
+| `public/app.js`   | Client-side JavaScript (vanilla JS, fetch API, `/api/*` endpoints) |
+| `public/starter-template.css` | Custom CSS for image selection and modals |
 | `/images`         | Source JPG images and converted PNGs |
 | `/thumbs`         | Thumbnail images for the convert modal |
 | `/infra`          | Bicep infrastructure-as-code (App Service, App Insights, Log Analytics) |
-| `/scripts`        | Deployment helper scripts |
 | `azure.yaml`      | azd project manifest |
 | `azd-deploy.ps1`  | Interactive deployment script with tenant/subscription/RG prompts |
 | `deploy.ps1`      | Legacy Azure CLI deployment script |
-| `process.php_broken`  | Intentionally memory-heavy version (tutorial artifact) |
-| `process.php_working` | Memory-efficient version (tutorial artifact) |
+
+### API Endpoints
+
+| Method | Route | Description |
+|--------|-------|-------------|
+| `GET`  | `/` | Serves `index.html` with CSRF token injected |
+| `GET`  | `/api/thumbs` | Returns JSON array of thumbnail filenames |
+| `GET`  | `/api/images?ext=` | Returns HTML list of images filtered by extension |
+| `POST` | `/api/process` | Converts selected JPGs to PNG (403 if 4+ images) |
+| `POST` | `/api/delete` | Deletes all `converted_*.png` files |
 
 ## Prerequisites
 
+- [Node.js 20+](https://nodejs.org/)
 - [Azure Developer CLI (azd)](https://aka.ms/azd-install)
 - [Azure CLI (az)](https://aka.ms/install-azure-cli)
 - An Azure subscription
+
+## Local Development
+
+```bash
+npm install
+npm start          # Starts on http://localhost:8080
+```
 
 ## Deployment
 
@@ -85,17 +100,14 @@ azd auth login --tenant-id <tenant-id>
 
 # Provision infrastructure + deploy app
 azd up --no-prompt
-
-# Deploy code (after initial provision)
-.\scripts\deploy-app.ps1
 ```
 
 ### What gets deployed
 
 | Resource | Description |
 |----------|-------------|
-| **App Service Plan** (B1 Linux) | Hosts the PHP web app |
-| **App Service** | PHP 8.4 web app with HTTPS-only, TLS 1.2 |
+| **App Service Plan** (B1 Linux) | Hosts the Node.js web app |
+| **App Service** | Node.js 20 LTS web app with HTTPS-only, TLS 1.2 |
 | **Log Analytics Workspace** | Centralized log storage (30-day retention) |
 | **Application Insights** | APM: request tracking, failures, performance, live metrics |
 
@@ -105,6 +117,15 @@ Application Insights auto-instrumentation is enabled via app settings:
 
 - `APPLICATIONINSIGHTS_CONNECTION_STRING` — connects telemetry to the App Insights instance
 - `ApplicationInsightsAgent_EXTENSION_VERSION = ~3` — enables server-side auto-instrumentation
+
+### Query 403 errors in App Insights
+
+```kql
+requests
+| where resultCode == "403"
+| project timestamp, name, url, resultCode, duration, client_IP
+| order by timestamp desc
+```
 
 ### View logs
 
@@ -135,9 +156,8 @@ Use Tools → Convert to PNG, select 4+ thumbnails, and click Convert to generat
 
 ## Security Features
 
-- **CSRF protection**: Double Submit Cookie pattern (works on Azure Linux PHP-FPM where sessions don't persist)
-- **Input validation**: Image names validated against strict regex, extensions whitelisted
-- **XSS prevention**: All output HTML-escaped with `htmlspecialchars()`
+- **CSRF protection**: Double Submit Cookie pattern (cookie + POST parameter comparison)
+- **Input validation**: Image filenames validated against strict regex, extensions whitelisted
 - **Restricted deletion**: Only `converted_*.png` files can be deleted
 - **HTTPS-only**: Enforced at the App Service level
 - **TLS 1.2 minimum**: Configured in Bicep
