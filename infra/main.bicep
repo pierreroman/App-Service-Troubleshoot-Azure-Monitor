@@ -110,6 +110,22 @@ resource webApp 'Microsoft.Web/sites@2023-12-01' = {
 }
 
 // ---------------------------------------------------------------------------
+// Disable App Service built-in authentication (Easy Auth)
+// ---------------------------------------------------------------------------
+resource webAppAuth 'Microsoft.Web/sites/config@2023-12-01' = {
+  parent: webApp
+  name: 'authsettingsV2'
+  properties: {
+    platform: {
+      enabled: false
+    }
+    globalValidation: {
+      unauthenticatedClientAction: 'AllowAnonymous'
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Outputs – consumed by azd for deployment
 // ---------------------------------------------------------------------------
 output AZURE_LOCATION string = location
