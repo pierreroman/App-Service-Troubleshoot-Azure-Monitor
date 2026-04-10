@@ -1,5 +1,12 @@
 'use strict';
 
+// ---------- Application Insights (must be first) ----------
+const appInsights = require('applicationinsights');
+if (process.env.APPLICATIONINSIGHTS_CONNECTION_STRING) {
+  appInsights.setup().setSendLiveMetrics(true).start();
+}
+const aiClient = appInsights.defaultClient;
+
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const crypto = require('crypto');
@@ -110,6 +117,11 @@ app.post('/api/process', async (req, res) => {
   // Intentional 403 for the troubleshooting tutorial:
   // Selecting more than 3 images triggers an error for Azure Monitor diagnostics.
   if (imageCount > 3) {
+    const msg = `403 — Too many images selected (${imageCount})`;
+    console.error(msg);
+    if (aiClient) {
+      aiClient.trackException({ exception: new Error(msg) });
+    }
     return res.status(403).send('Too many images selected — limit is 3 per batch.');
   }
 
