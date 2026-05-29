@@ -13,6 +13,23 @@ $appName = "ToolsDemo"
 $sku = "B1"
 $runtime = 'PHP:8.4'
 
+
+# ----- 1. Login & subscription ----------------------------------------------
+
+Write-Section "1. Login & subscription"
+if (-not (Invoke-AzSafe 'account' 'show' '-o' 'none')) {
+    Write-Host "ERROR: not logged in to az. Run: az login --tenant $($env:TENANT_ID)"
+    exit 1
+}
+az account show --query "{name:name, id:id, tenantId:tenantId, user:user.name}" -o table
+
+$CurrentSub = Invoke-AzTsv 'account' 'show' '--query' 'id'
+if ($CurrentSub -ne $env:SUBSCRIPTION_ID) {
+    Write-Host "WARN: active subscription ($CurrentSub) != SUBSCRIPTION_ID ($($env:SUBSCRIPTION_ID))"
+    Write-Host "      switching with: az account set --subscription $($env:SUBSCRIPTION_ID)"
+    az account set --subscription $env:SUBSCRIPTION_ID
+}
+
 # --------------- Provision Azure Resources ---------------
 
 # Create the resource group

@@ -128,4 +128,42 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById(targetId).innerHTML = data;
             });
     }
+
+    // --- Troubleshooting Demo Buttons ---
+    var demoToastEl = document.getElementById('demoToast');
+    var demoToast = demoToastEl ? bootstrap.Toast.getOrCreateInstance(demoToastEl, { delay: 5000 }) : null;
+
+    function showDemoToast(msg) {
+        if (!demoToast) { alert(msg); return; }
+        document.getElementById('demoToastBody').textContent = msg;
+        demoToast.show();
+    }
+
+    function callDemoEndpoint(url) {
+        return fetch(url)
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                showDemoToast(data.message || JSON.stringify(data));
+            })
+            .catch(function (err) {
+                showDemoToast('Request failed: ' + err.message);
+            });
+    }
+
+    document.getElementById('demoLeak').addEventListener('click', function (e) {
+        e.preventDefault();
+        callDemoEndpoint('/api/leak');
+    });
+
+    document.getElementById('demoSpike').addEventListener('click', function (e) {
+        e.preventDefault();
+        showDemoToast('Sending CPU spike request — the server will be unresponsive for ~3 s…');
+        callDemoEndpoint('/api/spike');
+    });
+
+    document.getElementById('demoCrash').addEventListener('click', function (e) {
+        e.preventDefault();
+        if (!confirm('This will crash the Node.js process. Continue?')) return;
+        callDemoEndpoint('/api/crash');
+    });
 });

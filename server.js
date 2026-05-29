@@ -172,6 +172,58 @@ app.post('/api/delete', (req, res) => {
   res.send(results.join('<br/>\n'));
 });
 
+// ==========================================================
+// Intentional errors for troubleshooting demos
+// ==========================================================
+
+// 1) Memory Leak — each call pushes ~1 MB into an array that is never freed.
+//    Repeated calls will cause RSS / heap to climb until the container OOMs.
+const _leakyStore = [];
+
+app.get('/api/leak', (req, res) => {
+  const chunk = Buffer.alloc(1024 * 1024, 'x');   // 1 MB
+  _leakyStore.push(chunk);
+  const totalMB = _leakyStore.length;
+  console.warn(`[DEMO] Memory leak: retained ${totalMB} MB so far`);
+  if (aiClient) {
+    aiClient.trackEvent({
+      name: 'MemoryLeakDemo',
+      properties: { retainedMB: String(totalMB) },
+    });
+  }
+  res.json({ retainedMB: totalMB, message: `Leaked ~${totalMB} MB total` });
+});
+
+// 2) CPU Spike — blocks the event loop with a heavy synchronous loop (~3-4 s).
+//    While running, the server cannot handle any other requests.
+app.get('/api/spike', (_req, res) => {
+  console.warn('[DEMO] CPU spike: blocking event loop…');
+  if (aiClient) {
+    aiClient.trackEvent({ name: 'CpuSpikeDemo' });
+  }
+  const start = Date.now();
+  // Burn CPU for ~3 seconds
+  while (Date.now() - start < 3000) {
+    Math.sqrt(Math.random() * Number.MAX_SAFE_INTEGER);
+  }
+  const elapsed = Date.now() - start;
+  res.json({ blockedMs: elapsed, message: `Event loop blocked for ${elapsed} ms` });
+});
+
+// 3) Unhandled Exception — throws after a short delay, crashing the process.
+//    In App Service this triggers an automatic restart and shows up in diagnostics.
+app.get('/api/crash', (_req, res) => {
+  console.error('[DEMO] Crash: throwing unhandled exception in 500 ms…');
+  if (aiClient) {
+    aiClient.trackException({ exception: new Error('Intentional crash for troubleshooting demo') });
+    aiClient.flush();
+  }
+  res.json({ message: 'Crash scheduled — the process will exit in ~500 ms.' });
+  setTimeout(() => {
+    throw new Error('Intentional unhandled exception — troubleshooting demo');
+  }, 500);
+});
+
 // ---------- Start ----------
 app.listen(PORT, () => {
   console.log(`Image Converter running on port ${PORT}`);

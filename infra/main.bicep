@@ -126,6 +126,138 @@ resource webAppAuth 'Microsoft.Web/sites/config@2023-12-01' = {
 }
 
 // ---------------------------------------------------------------------------
+// Action Group – shared by all demo alerts
+// ---------------------------------------------------------------------------
+resource demoActionGroup 'Microsoft.Insights/actionGroups@2023-01-01' = {
+  name: 'ag-demo-${resourceToken}'
+  location: 'global'
+  tags: tags
+  properties: {
+    groupShortName: 'DemoAlerts'
+    enabled: true
+    // Add email/webhook receivers here for your demo, e.g.:
+    // emailReceivers: [{ name: 'DemoEmail', emailAddress: 'you@example.com', useCommonAlertSchema: true }]
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Alert 1: Memory Leak — fires when ≥ 1 MemoryLeakDemo events in 5 min
+// ---------------------------------------------------------------------------
+resource alertMemoryLeak 'Microsoft.Insights/scheduledQueryRules@2023-03-15-preview' = {
+  name: 'alert-memory-leak-${resourceToken}'
+  location: location
+  tags: tags
+  properties: {
+    displayName: 'Demo – Memory Leak Detected'
+    description: 'Triggers when the /api/leak endpoint is called, indicating intentional memory leak activity.'
+    severity: 2
+    enabled: true
+    evaluationFrequency: 'PT1M'
+    windowSize: 'PT5M'
+    scopes: [
+      appInsights.id
+    ]
+    criteria: {
+      allOf: [
+        {
+          query: 'customEvents | where name == "MemoryLeakDemo"'
+          timeAggregation: 'Count'
+          operator: 'GreaterThanOrEqual'
+          threshold: 1
+          failingPeriods: {
+            numberOfEvaluationPeriods: 1
+            minFailingPeriodsToAlert: 1
+          }
+        }
+      ]
+    }
+    actions: {
+      actionGroups: [
+        demoActionGroup.id
+      ]
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Alert 2: CPU Spike — fires when ≥ 1 CpuSpikeDemo events in 5 min
+// ---------------------------------------------------------------------------
+resource alertCpuSpike 'Microsoft.Insights/scheduledQueryRules@2023-03-15-preview' = {
+  name: 'alert-cpu-spike-${resourceToken}'
+  location: location
+  tags: tags
+  properties: {
+    displayName: 'Demo – CPU Spike (Event Loop Block)'
+    description: 'Triggers when the /api/spike endpoint is called, causing a synchronous event loop block.'
+    severity: 2
+    enabled: true
+    evaluationFrequency: 'PT1M'
+    windowSize: 'PT5M'
+    scopes: [
+      appInsights.id
+    ]
+    criteria: {
+      allOf: [
+        {
+          query: 'customEvents | where name == "CpuSpikeDemo"'
+          timeAggregation: 'Count'
+          operator: 'GreaterThanOrEqual'
+          threshold: 1
+          failingPeriods: {
+            numberOfEvaluationPeriods: 1
+            minFailingPeriodsToAlert: 1
+          }
+        }
+      ]
+    }
+    actions: {
+      actionGroups: [
+        demoActionGroup.id
+      ]
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Alert 3: Process Crash — fires when ≥ 1 "Intentional crash" exceptions in 5 min
+// ---------------------------------------------------------------------------
+resource alertCrash 'Microsoft.Insights/scheduledQueryRules@2023-03-15-preview' = {
+  name: 'alert-crash-${resourceToken}'
+  location: location
+  tags: tags
+  properties: {
+    displayName: 'Demo – Process Crash (Unhandled Exception)'
+    description: 'Triggers when the /api/crash endpoint throws an intentional unhandled exception.'
+    severity: 1
+    enabled: true
+    evaluationFrequency: 'PT1M'
+    windowSize: 'PT5M'
+    scopes: [
+      appInsights.id
+    ]
+    criteria: {
+      allOf: [
+        {
+          query: 'exceptions | where outerMessage has "Intentional crash"'
+          timeAggregation: 'Count'
+          operator: 'GreaterThanOrEqual'
+          threshold: 1
+          failingPeriods: {
+            numberOfEvaluationPeriods: 1
+            minFailingPeriodsToAlert: 1
+          }
+        }
+      ]
+    }
+    actions: {
+      actionGroups: [
+        demoActionGroup.id
+      ]
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Outputs – consumed by azd for deployment
 // ---------------------------------------------------------------------------
 output AZURE_LOCATION string = location

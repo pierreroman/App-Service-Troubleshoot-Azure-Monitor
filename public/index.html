@@ -38,6 +38,15 @@
             <li class="nav-item">
               <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">About</a>
             </li>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle text-warning" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">⚠ Demos</a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" id="demoLeak">Memory Leak (+1 MB)</a></li>
+                <li><a class="dropdown-item" href="#" id="demoSpike">CPU Spike (~3 s block)</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="#" id="demoCrash">Crash Process</a></li>
+              </ul>
+            </li>
           </ul>
         </div>
       </div>
@@ -114,6 +123,17 @@
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Toast for demo feedback -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+      <div id="demoToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <strong class="me-auto">Demo</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="demoToastBody"></div>
       </div>
     </div>
 
