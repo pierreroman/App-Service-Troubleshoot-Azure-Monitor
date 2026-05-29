@@ -152,7 +152,7 @@ resource alertMemoryLeak 'Microsoft.Insights/scheduledQueryRules@2023-03-15-prev
     description: 'Triggers when the /api/leak endpoint is called, indicating intentional memory leak activity.'
     severity: 2
     enabled: true
-    evaluationFrequency: 'PT1M'
+    evaluationFrequency: 'PT5M'
     windowSize: 'PT5M'
     scopes: [
       appInsights.id
@@ -191,7 +191,7 @@ resource alertCpuSpike 'Microsoft.Insights/scheduledQueryRules@2023-03-15-previe
     description: 'Triggers when the /api/spike endpoint is called, causing a synchronous event loop block.'
     severity: 2
     enabled: true
-    evaluationFrequency: 'PT1M'
+    evaluationFrequency: 'PT5M'
     windowSize: 'PT5M'
     scopes: [
       appInsights.id
@@ -230,7 +230,7 @@ resource alertCrash 'Microsoft.Insights/scheduledQueryRules@2023-03-15-preview' 
     description: 'Triggers when the /api/crash endpoint throws an intentional unhandled exception.'
     severity: 1
     enabled: true
-    evaluationFrequency: 'PT1M'
+    evaluationFrequency: 'PT5M'
     windowSize: 'PT5M'
     scopes: [
       appInsights.id
